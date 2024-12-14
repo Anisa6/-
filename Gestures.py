@@ -45,7 +45,7 @@ class Gestures:
                     # Если за время с начала жеста ключевые точки были близки более 1 раза
                     Gestures.start_watch_time = 0
                     Gestures.start_watch_counter = 0
-                    print('включаем слежение')
+                    # print('включаем слежение')
                     result = True
             else:
                 # Если прошло более 2 секунд, а жест еще не сработал
@@ -55,6 +55,7 @@ class Gestures:
             #print(int(Gestures.FindDistance(p1, p2)), Gestures.start_watch_counter)
 
         return result
+    
     
 
     @staticmethod
@@ -74,9 +75,9 @@ class Gestures:
             #print(x_min, y_min, x_max, y_max)
             if x_min < Gestures.stop_watch_REYE[0] < x_max and y_min < Gestures.stop_watch_REYE[1] < y_max and \
                 x_min < Gestures.stop_watch_LEYE[0] < x_max and y_min < Gestures.stop_watch_LEYE[1] < y_max:
-                #print('???')
+                # print('???')
                 if Gestures.stop_watch_time == 0:
-                    #print('предполагаемое начало жеста')
+                    print('предполагаемое начало жеста')
                     Gestures.stop_watch_time = int(time() * 1000)  # предполагаемое начало жеста
                     Gestures.stop_watch_counter = 1
                 elif int(time() * 1000) - Gestures.stop_watch_time < 1000:
@@ -88,7 +89,7 @@ class Gestures:
                         # Если за время с начала жеста ключевые точки были близки более 1 раза
                         Gestures.stop_watch_time = 0
                         Gestures.stop_watch_counter = 0
-                        print('выключаем слежение')
+                        # print('выключаем слежение')
                         result = True
                 else:
                     # Если прошло более 2 секунд, а жест еще не сработал

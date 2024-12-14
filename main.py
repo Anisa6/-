@@ -14,11 +14,11 @@ while True:
         vp.mouse_left_click()
         if vp.check_stop_watch():
             continue
-        elif vp.sound_process():
-            #print('sound')
-            dist = len_between(vp.HandLandmark[4], vp.HandLandmark[8])
-            #print(vp.HandLandmark[4],vp.HandLandmark[8], dist)
-            sv.change(dist)
-
-        #elif vp.check_exit():
-            #break
+        
+        elif vp.sound_process_active():
+            if vp.HandLandmark:
+                dist = len_between(vp.HandLandmark[4], vp.HandLandmark[8])
+                sv.change(dist)
+                
+            if vp.sound_process_stop():
+                continue

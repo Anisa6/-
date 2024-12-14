@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import pyautogui as pag
 from defines import *
+import time
 
 from Gestures import Gestures as gesture, len_between
 
@@ -24,6 +25,8 @@ class VideoProcessing:
 
 
     watch = False   # Флаг следить / не следить за жестами
+    
+    sound_active = False 
 
     @staticmethod
     def take_hand_points(img, h, w):
@@ -31,13 +34,6 @@ class VideoProcessing:
         if results_hand.multi_hand_landmarks is not None:
             for handLms in results_hand.multi_hand_landmarks:
                 VideoProcessing.HandLandmark = [(int(point.x * w), int(point.y * h)) for point in handLms.landmark]
-                # x_mouse, y_mouse = VideoProcessing.HandLandmark[0]
-                # pag.moveTo(x_mouse, y_mouse)
-                #if VideoProcessing.HandLandmark[4][0] - VideoProcessing.HandLandmark[20][0] and VideoProcessing.HandLandmark[4][1] - VideoProcessing.HandLandmark[20][1] < 10:
-                # print(len_between(VideoProcessing.HandLandmark[4], VideoProcessing.HandLandmark[12]))
-                # if len_between(VideoProcessing.HandLandmark[4], VideoProcessing.HandLandmark[12]) < 20:
-                #     pag.click()
-                #     print('клик')
 
         else:
             VideoProcessing.HandLandmark = list()
@@ -82,13 +78,6 @@ class VideoProcessing:
             img = cv2.circle(img, point, 10, (0, 255, 255), -1)
 
 
-        # xmin, xmax = min(xLst), max(xLst)
-        # ymin, ymax = min(yLst), max(yLst)
-        # box = xmin, ymin, xmax, ymax
-        #
-        # cv2.rectangle(img, (box[0] - 20, box[1] - 20), (box[2] + 20, box[3] + 20), (0, 255, 0), 2)
-
-        # Кодиить здесь!!!!
         cv2.imshow('video', img)
         if cv2.waitKey(1) == ord('q'):
             pass
@@ -101,6 +90,7 @@ class VideoProcessing:
             if len(VideoProcessing.HandLandmark) > 0 and len(VideoProcessing.FaceLandmark) > 0:
                 if gesture.watch(VideoProcessing.HandLandmark[8], VideoProcessing.FaceLandmark[RIGHT_EYE]):
                     VideoProcessing.watch = True
+                    print('включаем слежение')
 
         return VideoProcessing.watch
 
@@ -110,6 +100,8 @@ class VideoProcessing:
         if len(VideoProcessing.HandLandmark) > 0:
             if gesture.stop_watch(VideoProcessing.HandLandmark, VideoProcessing.FaceLandmark):
                 VideoProcessing.watch = False
+                print('выключаем слежение')
+                
         return not VideoProcessing.watch
 
 
@@ -121,16 +113,27 @@ class VideoProcessing:
                 return True
         return False
     
-
     @staticmethod
-    def sound_process():
-        result = False
-        if len(VideoProcessing.HandLandmark) > 0 and len(VideoProcessing.FaceLandmark) > 0:
-            if gesture.sound(VideoProcessing.HandLandmark[8],
-                          VideoProcessing.FaceLandmark[RIGHT_EAR]):
-                result = True
-        return result
+    def sound_process_active():
+        if not VideoProcessing.sound_active:
+            #print(len(VideoProcessing.HandLandmark), len(VideoProcessing.FaceLandmark))
+            if len(VideoProcessing.HandLandmark) > 0 and len(VideoProcessing.FaceLandmark) > 0:
+                if gesture.watch(VideoProcessing.HandLandmark[8], VideoProcessing.FaceLandmark[RIGHT_EAR]):
+                    VideoProcessing.sound_active = True
+                    print('включаем управление звуком')
 
+        return VideoProcessing.sound_active
+    
+    @staticmethod
+    def sound_process_stop():
+        if len(VideoProcessing.HandLandmark) > 0 and len(VideoProcessing.FaceLandmark) > 0:
+                if gesture.watch(VideoProcessing.HandLandmark[8], VideoProcessing.FaceLandmark[RIGHT_EAR]):
+                    VideoProcessing.sound_active = False
+                    print('выключаем управление звуком')
+
+        return VideoProcessing.sound_active
+                
+                
 
     @staticmethod
     def mouse_move():
@@ -151,8 +154,6 @@ def main():
     vp = VideoProcessing()
 
     vp.process()
-    #print(vp.HandLandmark)
-    #print(vp.FaceLandmark)
 
 
 
